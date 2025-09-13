@@ -1,0 +1,7 @@
+{
+    "initial": "Describe what you see in this image. Be concise and focus on the main elements.",
+
+    "difference": "You are comparing two frames. The highlighted regions show where changes occurred. Describe ONLY what has changed between the frames. Focus on: 1. Objects that appeared or disappeared 2. Movement of existing objects 3. Changes in lighting or shadows 4. Any human activity. Be specific and concise.",
+
+    "focused": "The green boxes highlight areas of change. Describe ONLY what is happening in these highlighted regions. Ignore everything else in the image."
+}

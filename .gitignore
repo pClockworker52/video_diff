@@ -1,0 +1,38 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Model files (too large for git)
+models/*.gguf
+
+# Environment files
+.env
+
+# Logs
+logs/
+*.log
+
+# Video files
+*.mp4
+*.avi
+*.mov
+
+# Temporary files
+temp/
+tmp/
+
+# OS files
+.DS_Store
+Thumbs.db
+*:Zone.Identifier
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Output files
+output/
+debug_images/
