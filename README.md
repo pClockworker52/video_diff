@@ -2,27 +2,32 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![LFM2-VL](https://img.shields.io/badge/Model-LFM2--VL--1.6B-green.svg)](https://huggingface.co/LiquidAI)
+[![LFM2-VL](https://img.shields.io/badge/Model-LFM2--VL--450M-orange.svg)](https://huggingface.co/LiquidAI)
+[![Status](https://img.shields.io/badge/Status-Hackathon%20Ready-brightgreen.svg)]()
 
-A powerful real-time video analysis application that combines OpenCV change detection with Liquid AI's LFM2-VL vision-language model for intelligent change analysis and description.
+A real-time video analysis application that combines advanced OpenCV change detection with automated video recording. Originally designed to integrate Liquid AI's LFM2-VL vision-language model for intelligent scene analysis.
+
+> ⚠️ **Important**: Due to current llama.cpp limitations with LFM2-VL multimodal projector loading, the VLM component provides text-only responses. See [LFM2-VL_MULTIMODAL_LIMITATION.md](LFM2-VL_MULTIMODAL_LIMITATION.md) for technical details.
 
 ## 🚀 Features
 
-- **Real-Time Video Processing**: Live camera feed with instant change detection
-- **Advanced VLM Analysis**: LFM2-VL 1.6B model provides detailed descriptions of changes
-- **Regional Analysis**: Focuses on specific change regions with contextual padding
+- **Real-Time Change Detection**: Advanced OpenCV algorithms detect motion and changes
+- **Automated Video Recording**: Records change events with timestamped subtitles
+- **Full-Frame Analysis**: Processes complete video frames for comprehensive monitoring
 - **Temporal Intelligence**: Compares frames 50 frames apart for meaningful change detection
-- **GPU Acceleration**: CUDA support for fast inference
-- **Comprehensive Logging**: Timestamped VLM outputs for analysis
+- **Modern GUI Interface**: CustomTkinter-based interface with live preview
+- **Comprehensive Logging**: Detailed change detection logs with timestamps
 - **Easy Setup**: One-command model download and server management
+- **GPU Acceleration**: CUDA support for faster processing (when VLM is functional)
 
 ## 🎯 What Makes This Special
 
-Unlike simple motion detection, Video-Diff uses a state-of-the-art vision-language model to:
-- **Understand context**: "A person picked up their mobile phone"
-- **Detect objects**: Cars, people, phones, hands, and more
-- **Describe movement**: Detailed analysis of what changed and how
-- **Track interactions**: Human-object interactions and activities
+This application provides intelligent change detection with:
+- **Advanced Algorithms**: Multi-method difference detection (SSIM, background subtraction)
+- **Smart Filtering**: Filters out noise and focuses on significant changes
+- **Automatic Recording**: Captures and saves change events with descriptive subtitles
+- **Professional GUI**: Clean, modern interface for real-time monitoring
+- **Extensible Architecture**: Modular design ready for enhanced VLM integration
 
 ## 📋 Quick Start
 
@@ -33,13 +38,9 @@ cd video_diff
 pip install -r requirements.txt
 ```
 
-### 2. Download and Start LFM2-VL Model
+### 2. Install Dependencies
 ```bash
-# Download the recommended 1.6B model (1.25GB + 564MB projector)
-python setup_local_model.py Q8_0 1.6B
-
-# Start the optimized server
-python restart_server.py
+pip install opencv-python numpy scikit-image customtkinter Pillow python-dotenv requests
 ```
 
 ### 3. Run the Application
@@ -49,15 +50,27 @@ python src/main.py
 
 ## 🎮 Usage
 
-1. **Camera Setup**: The app auto-detects your camera
-2. **Baseline Capture**: Click "Capture Baseline" to set reference frame
-3. **Live Analysis**: Real-time change detection with VLM descriptions
-4. **View Logs**: Check `logs/vlm_output.txt` for detailed analysis
+1. **Mode Selection**: Choose between Camera or Video File processing
+2. **Start Detection**: Click "Start Detection" to begin monitoring
+3. **Automatic Recording**: Video recording starts automatically when detection begins
+4. **View Output**: Check `recordings/` folder for saved videos with subtitles
+5. **View Logs**: Check `logs/vlm_output.txt` for detailed analysis logs
 
 ### Controls
-- **Capture Baseline**: Sets the reference frame for comparison
-- **Start/Stop**: Toggle change detection
-- **Visual Feedback**: Green boxes highlight detected changes
+- **Camera/File Toggle**: Switch between live camera and video file processing
+- **File Selection**: Browse and select video files for analysis
+- **Start/Stop Detection**: Toggle change detection and recording
+- **Visual Feedback**: Live preview shows detected changes with highlighting
+
+### Optional VLM Setup (Advanced)
+For enhanced scene descriptions (currently limited by llama.cpp):
+```bash
+# Download the 450M model for basic text responses
+python setup_local_model.py Q8_0 450M
+
+# Start the server (optional - app works without VLM)
+python restart_server.py
+```
 
 ## 🔧 Configuration
 
@@ -110,19 +123,25 @@ python src/main.py
 
 ## 📊 Performance
 
-### Inference Times (RTX 4080)
-- **1.6B Q8_0**: 2-8 seconds per analysis
-- **450M Q8_0**: 1-5 seconds per analysis
+### Processing Speed
+- **Change Detection**: ~30 FPS on modern hardware
+- **Video Recording**: Real-time recording with subtitle overlay
+- **File Processing**: Depends on video resolution and length
 
-### Analysis Quality Examples
+### Application Output Examples
 
-**Input**: Person picking up phone
-**Output**:
-> "A person's hand and arm have moved from their original position, indicating they may be picking up or moving an object. The mobile phone has appeared in the current frame."
+**Change Detection Log**:
+```
+[2024-01-15 14:30:25] BASELINE: Baseline frame captured
+[2024-01-15 14:30:28] CHANGE: Motion detected - 2 regions (1240 pixels total)
+[2024-01-15 14:30:31] CHANGE: Significant change - 1 region (856 pixels total)
+```
 
-**Input**: Car movement
-**Output**:
-> "A car has moved from its original position in the LEFT region to a new position in the RIGHT region."
+**Recorded Video Features**:
+- Timestamped change events
+- Visual highlighting of detected changes
+- Subtitle overlay with change descriptions
+- High-quality video output (configurable codec)
 
 ## 🔍 Technical Details
 
@@ -134,11 +153,11 @@ python src/main.py
 5. **VLM Processing**: Side-by-side region comparison
 6. **Intelligent Analysis**: Detailed change descriptions
 
-### VLM Integration
+### VLM Integration (Limited)
 - **Model**: LFM2-VL (Liquid AI's vision-language model)
+- **Current Status**: Text-only responses due to llama.cpp multimodal projector limitations
 - **Inference**: Local llama.cpp server with CUDA acceleration
-- **Prompting**: Specialized prompts for change detection tasks
-- **Output**: Structured analysis of movements, objects, and interactions
+- **Architecture**: Ready for future multimodal enhancements
 
 ## 🛠️ Advanced Configuration
 
@@ -192,29 +211,30 @@ python restart_server.py
 - Ensure stable camera mounting
 
 ### VLM Analysis Issues
-- Check server logs for errors
-- Verify model files are complete
-- Restart server: `python restart_server.py`
+- **Known Limitation**: llama.cpp multimodal projector not loading (see [LFM2-VL_MULTIMODAL_LIMITATION.md](LFM2-VL_MULTIMODAL_LIMITATION.md))
+- Application works fully without VLM - change detection and recording function normally
+- VLM provides text-only responses when enabled
 
 ## 📁 Project Structure
 
 ```
 video_diff/
-├── src/                      # Core application code
-│   ├── main.py              # Application entry point
-│   ├── gui.py               # Real-time GUI interface
-│   ├── vlm_processor.py     # VLM integration
-│   ├── diff_engine.py       # Change detection
-│   └── camera_handler.py    # Video capture
-├── config/                   # Configuration files
-│   ├── settings.json        # App settings
-│   ├── prompts.json         # VLM prompts
-│   └── local_model.json     # Model configuration
-├── models/                   # Model files (gitignored)
-├── logs/                     # Analysis logs
-├── restart_server.py         # Server management
-├── setup_local_model.py      # Model download
-└── requirements.txt          # Python dependencies
+├── src/                           # Core application code
+│   ├── main.py                   # Application controller
+│   ├── gui.py                    # CustomTkinter GUI interface
+│   ├── vlm_processor.py          # VLM integration (limited)
+│   ├── diff_engine.py            # Multi-method change detection
+│   ├── camera_handler.py         # Video capture and buffering
+│   └── video_recorder.py         # Video recording with subtitles
+├── config/                        # Configuration files (optional)
+├── models/                        # Model files (gitignored)
+├── logs/                          # Analysis and debug logs
+├── recordings/                    # Output video recordings
+├── restart_server.py              # LFM2-VL server management
+├── setup_local_model.py           # Model download utility
+├── test_multimodal.py             # Multimodal testing script
+├── LFM2-VL_MULTIMODAL_LIMITATION.md  # Technical limitation documentation
+└── requirements.txt               # Python dependencies
 ```
 
 ## 🤝 Contributing

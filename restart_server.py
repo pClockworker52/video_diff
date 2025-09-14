@@ -25,8 +25,9 @@ def kill_existing_server():
 
 def start_server():
     """Start the LFM2-VL server with optimized settings"""
-    model_path = Path("models/LFM2-VL-1.6B-Q8_0.gguf")
-    projector_path = Path("models/mmproj-LFM2-VL-1.6B-Q8_0.gguf")
+    # Try 450M model which worked before
+    model_path = Path("models/LFM2-VL-450M-Q8_0.gguf")
+    projector_path = Path("models/mmproj-LFM2-VL-450M-Q8_0.gguf")
 
     if not model_path.exists():
         print(f"Model not found at {model_path}")
@@ -42,11 +43,13 @@ def start_server():
         "python", "-m", "llama_cpp.server",
         "--model", str(model_path),
         "--clip_model_path", str(projector_path),  # Essential for vision capabilities
+        "--chat_format", "chatml",   # Try explicit chat format for multimodal
         "--port", "8000",
         "--host", "localhost",
         "--n_ctx", "4096",           # Larger context window
         "--n_gpu_layers", "-1",      # Use GPU if available
-        "--seed", "-1"               # Random seed for variety
+        "--seed", "-1",              # Random seed for variety
+        "--verbose", "True"          # Add verbose logging
     ]
 
     print("Starting LFM2-VL server with optimized parameters...")

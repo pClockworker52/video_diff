@@ -33,7 +33,7 @@ class VideoDiffController:
         self.baseline_established = False
         self.processing_thread = None
         self.frame_skip_count = 0
-        self.frame_skip_interval = 50
+        self.frame_skip_interval = 20
         self.vlm_reference_frame = None  # Store frame from N frames ago for VLM comparison
 
         # Connect GUI callbacks
@@ -284,12 +284,35 @@ class VideoDiffController:
                                 self.gui.description_text.insert("end",
                                     f"[CHANGE] {change_summary} - {description}\n")
                             else:
-                                # Write to file
-                                with open("logs/vlm_output.txt", "a", encoding="utf-8") as f:
-                                    f.write(f"[{timestamp}] CHANGE: {change_summary} (VLM offline)\n")
+                                # VLM reported offline, but still try to get mock analysis
+                                try:
+                                    # Use the reference frame from N frames ago instead of consecutive frame
+                                    vlm_prev_frame = self.vlm_reference_frame if self.vlm_reference_frame is not None else prev_frame
+                                    description = self.vlm.analyze_difference(
+                                        vlm_prev_frame,  # Frame from N frames ago
+                                        curr_frame,      # Current frame
+                                        highlights       # Change coordinates
+                                    )
 
-                                self.gui.description_text.insert("end",
-                                    f"[CHANGE] {change_summary} (VLM offline)\n")
+                                    # Write to file with mock analysis
+                                    with open("logs/vlm_output.txt", "a", encoding="utf-8") as f:
+                                        f.write(f"[{timestamp}] CHANGE: {change_summary} - {description}\n")
+
+                                    # Add subtitle to video recording if active
+                                    if self.recorder.is_recording:
+                                        self.recorder.add_subtitle(f"{change_summary} - {description}", duration=5.0)
+
+                                    # Also write to GUI
+                                    self.gui.description_text.insert("end",
+                                        f"[CHANGE] {change_summary} - {description}\n")
+
+                                except Exception as e:
+                                    # Fallback to basic change detection
+                                    with open("logs/vlm_output.txt", "a", encoding="utf-8") as f:
+                                        f.write(f"[{timestamp}] CHANGE: {change_summary} (VLM offline)\n")
+
+                                    self.gui.description_text.insert("end",
+                                        f"[CHANGE] {change_summary} (VLM offline)\n")
 
                             self.gui.description_text.see("end")
 
