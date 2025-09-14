@@ -105,6 +105,14 @@ class VideoDiffApp:
         )
         self.start_button.pack(side="left", padx=5)
 
+        # Recording status label (no separate button needed)
+        self.record_status_label = ctk.CTkLabel(
+            self.button_frame,
+            text="● REC",
+            text_color="gray"
+        )
+        self.record_status_label.pack(side="left", padx=5)
+
         # Progress bar for file processing
         self.progress_bar = ctk.CTkProgressBar(self.button_frame)
         self.progress_bar.pack(side="left", padx=10, fill="x", expand=True)
@@ -190,6 +198,22 @@ class VideoDiffApp:
             self.start_button.configure(text="Start Detection")
             self.progress_bar.set(0)
             self.description_text.insert("end", "Detection stopped\n")
+
+    def toggle_recording(self):
+        """Toggle recording - will be overridden by controller"""
+        print("GUI: toggle_recording called (should be overridden)")
+        pass
+
+    def update_recording_status(self, is_recording, output_file=None):
+        """Update recording status display"""
+        if is_recording:
+            self.record_status_label.configure(text="● REC", text_color="red")
+            if output_file:
+                self.description_text.insert("end", f"Recording started: {output_file}\n")
+        else:
+            self.record_status_label.configure(text="● REC", text_color="gray")
+            if output_file:
+                self.description_text.insert("end", f"Recording saved: {output_file}\n")
 
     def process_video_file(self):
         """This method is handled by the controller"""

@@ -87,51 +87,51 @@ class VLMProcessor:
         return response
 
     def analyze_difference(self, prev_frame, curr_frame, highlights):
-        """Analyze differences by extracting and comparing regions"""
+        """Analyze differences using full-frame side-by-side comparison"""
         if self.is_disabled:
             raise RuntimeError("VLM analysis disabled due to consecutive failures")
 
         if not highlights:
             return "No significant changes detected."
 
-        # Extract the largest change region from both frames
-        largest_highlight = highlights[0]  # Highlights are sorted by area
-        print(f"VLM: Extracting region with bbox: {largest_highlight['bbox']}")
+        # Use full frames instead of regional extraction
+        print(f"VLM: Using full-frame analysis instead of regional extraction")
 
-        # Extract regions from both frames with more context
-        prev_region = self._extract_region(prev_frame, largest_highlight['bbox'])
-        curr_region = self._extract_region(curr_frame, largest_highlight['bbox'])
-        print(f"VLM: Extracted regions - prev: {prev_region.shape}, curr: {curr_region.shape}")
-
-        # Combine regions side-by-side for comparison
-        combined_region = self._combine_regions_side_by_side(prev_region, curr_region)
-        print(f"VLM: Combined region shape: {combined_region.shape}")
+        # Combine full frames side-by-side for comparison
+        combined_frames = self._combine_frames_side_by_side(prev_frame, curr_frame)
+        print(f"VLM: Combined frames shape: {combined_frames.shape}")
 
         # Save the combined image for debugging
         import time
         timestamp = int(time.time())
         debug_path = f"logs/vlm_input_{timestamp}.jpg"
-        cv2.imwrite(debug_path, combined_region)
+        cv2.imwrite(debug_path, combined_frames)
         print(f"VLM: Saved input image to {debug_path}")
 
-        # Prepare combined image for model
-        combined_region_data = self._prepare_image(combined_region)
-        print(f"VLM: Prepared combined data length: {len(combined_region_data)}")
+        # Prepare combined frames for model
+        combined_frames_data = self._prepare_image(combined_frames)
+        print(f"VLM: Prepared combined data length: {len(combined_frames_data)}")
 
-        # Focused prompt for regional comparison
-        comparison_prompt = """You are looking at two cropped regions from video frames side-by-side with a white separator.
-LEFT = region from previous frame (50 frames ago), RIGHT = region from current frame.
+        # Full-frame comparison prompt optimized for office/indoor setting
+        comparison_prompt = """You are analyzing two full video frames side-by-side with a white separator.
+LEFT = frame from 50 frames ago, RIGHT = current frame.
 
-These regions show areas where change was detected. Describe exactly what changed:
-- What objects moved, appeared, or disappeared in these regions?
-- Did hands, arms, or other body parts move?
-- Did someone pick up, put down, or move a mobile phone or other object?
-- Focus on the specific changes you can see in these cropped areas.
+This is an indoor office/room setting where someone is sitting and may be interacting with objects.
 
-Be specific about what you observe in each region."""
+Compare the two frames and describe what changed:
+- Did a person's hand or arm move into or out of the frame?
+- Was an object (like a mobile phone, book, cup, etc.) picked up, moved, or put down?
+- Did someone reach for something or make a gesture?
+- Are there any new objects visible that weren't there before?
+- Did existing objects change position or orientation?
+- Did the person's posture or position change?
 
-        # Send combined region for analysis
-        response = self._call_model(combined_region_data, comparison_prompt)
+Focus on the actual changes you can see between the LEFT and RIGHT frames. This is an indoor office setting, so avoid mentioning cars, outdoor scenes, or multiple people unless you clearly see them.
+
+Be specific about what moved, appeared, or changed between the two frames."""
+
+        # Send combined frames for analysis
+        response = self._call_model(combined_frames_data, comparison_prompt)
 
         return response
 
@@ -321,7 +321,7 @@ Be specific about what you observe in each region."""
                         ]
                     }
                 ],
-                "max_tokens": 150,          # More tokens for comparison analysis
+                "max_tokens": 300,          # Increased tokens for detailed analysis
                 "temperature": 0.0,
                 "top_p": 1.0,
                 "frequency_penalty": 0.0,
@@ -403,7 +403,7 @@ Be specific about what you observe in each region."""
                         ]
                     }
                 ],
-                "max_tokens": 150,          # More tokens for detailed descriptions
+                "max_tokens": 300,          # Increased tokens for detailed descriptions
                 "temperature": 0.3,         # Some creativity for varied responses
                 "top_p": 0.9,              # Nucleus sampling for variety
                 "frequency_penalty": 0.0,   # No frequency penalty

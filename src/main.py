@@ -12,6 +12,7 @@ from gui import VideoDiffApp
 from camera_handler import CameraHandler, VideoFileHandler
 from diff_engine import DifferenceEngine
 from vlm_processor import VLMProcessor
+from video_recorder import VideoRecorder
 
 
 class VideoDiffController:
@@ -23,6 +24,8 @@ class VideoDiffController:
         self.diff_engine = DifferenceEngine(sensitivity=0.3)
         print("CONTROLLER: Creating VLMProcessor")
         self.vlm = VLMProcessor()
+        print("CONTROLLER: Creating VideoRecorder")
+        self.recorder = VideoRecorder()
         print("CONTROLLER: Creating GUI")
         self.gui = VideoDiffApp()
 
@@ -93,6 +96,22 @@ class VideoDiffController:
             self.baseline_established = False
             self.gui.start_button.configure(text="Stop Detection")
 
+            # Auto-start recording when detection starts
+            if self.gui.processing_mode == "camera":
+                current_frame = self.camera.get_frame()
+            else:
+                current_frame = self.video_handler.get_frame()
+
+            if current_frame is not None:
+                height, width = current_frame.shape[:2]
+                success = self.recorder.start_recording(width, height, fps=30)
+
+                if success:
+                    output_file = str(self.recorder.output_filename)
+                    self.gui.update_recording_status(True, output_file)
+                else:
+                    self.gui.description_text.insert("end", "Failed to start recording\n")
+
             print("CONTROLLER: Starting processing thread")
             self.processing_thread = threading.Thread(
                 target=self.processing_loop,
@@ -116,7 +135,13 @@ class VideoDiffController:
                 self.video_handler.release()
                 self.video_handler = None
 
+            # Stop recording if active
+            if self.recorder.is_recording:
+                output_file = self.recorder.stop_recording()
+                self.gui.update_recording_status(False, output_file)
+
             self.gui.description_text.insert("end", "Detection stopped\n")
+
 
     def processing_loop(self):
         """Main processing loop"""
@@ -215,6 +240,11 @@ class VideoDiffController:
                 viz_copy = viz_frame.copy()
                 self.gui.root.after(0, lambda f=viz_copy: self._update_video_frame(f, True))
 
+                # Record frame if recording is active
+                if self.recorder.is_recording:
+                    # Record the visualization frame (with highlights)
+                    self.recorder.write_frame(viz_frame)
+
                 # Analyze changes with VLM (only if significant changes and frame skipping)
                 if highlights:
                     change_summary = self.diff_engine.get_change_summary(highlights)
@@ -245,6 +275,10 @@ class VideoDiffController:
                                 # Write to file
                                 with open("logs/vlm_output.txt", "a", encoding="utf-8") as f:
                                     f.write(f"[{timestamp}] CHANGE: {change_summary} - {description}\n")
+
+                                # Add subtitle to video recording if active
+                                if self.recorder.is_recording:
+                                    self.recorder.add_subtitle(f"{change_summary} - {description}", duration=5.0)
 
                                 # Also write to GUI
                                 self.gui.description_text.insert("end",
