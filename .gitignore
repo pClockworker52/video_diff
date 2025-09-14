@@ -36,3 +36,16 @@ Thumbs.db
 # Output files
 output/
 debug_images/
+recordings/
+
+# Documentation files (keep README.md only)
+*.md
+!README.md
+
+# Development and test files
+test_*.py
+debug_*.py
+create_test_*.py
+
+# Claude Code files
+.claude/
