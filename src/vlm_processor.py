@@ -185,7 +185,22 @@ Be specific and concise about what you observe."""
 
             # Extract and clean response
             full_response = self.processor.decode(outputs[0], skip_special_tokens=True)
+
+            # Debug: print the raw response to understand the format
+            print(f"DEBUG: Raw model response: {full_response[:200]}...")
+
             response = self._extract_assistant_response(full_response)
+
+            # Ensure we only return the actual assistant response, not the full conversation
+            if response.startswith("system\n") or "user\n" in response[:100]:
+                # If we're still getting the full conversation, try to extract just the end
+                lines = response.split('\n')
+                # Find the last substantial line that's not a marker
+                for line in reversed(lines):
+                    line = line.strip()
+                    if line and not line.startswith(('<|', 'system', 'user', 'assistant')):
+                        return line
+                return "Change detected but description parsing failed"
 
             return response
 
