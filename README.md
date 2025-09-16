@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![LFM2-VL](https://img.shields.io/badge/Model-LFM2--VL--450M-orange.svg)](https://huggingface.co/LiquidAI)
+[![LFM2-VL](https://img.shields.io/badge/Model-LFM2--VL--1.6B-green.svg)](https://huggingface.co/LiquidAI)
 [![Status](https://img.shields.io/badge/Status-Hackathon%20Ready-brightgreen.svg)]()
 
 A real-time video analysis application that combines advanced OpenCV change detection with Liquid AI's LFM2-VL vision-language model for intelligent scene analysis and automated video recording.
@@ -120,18 +120,21 @@ The application will automatically download and initialize the LFM2-VL-1.6B mode
 
 ### Application Output Examples
 
-**Change Detection Log**:
+**Real LFM2-VL Analysis Examples**:
 ```
-[2024-01-15 14:30:25] BASELINE: Baseline frame captured
-[2024-01-15 14:30:28] CHANGE: Motion detected - 2 regions (1240 pixels total)
-[2024-01-15 14:30:31] CHANGE: Significant change - 1 region (856 pixels total)
+[2025-09-16 11:41:06] BASELINE: The image shows a simple scene with a dark gray background. In the top left corner, there is a light gray rectangle. To the right of the rectangle, there is a red square...
+
+[2025-09-16 11:41:15] CHANGE: 2 change region(s) detected - Region 1 (top-left): The red square has moved to the top-right quadrant of the frame; Region 2 (top-left): The green circle has shifted from the top-left quadrant to the top-right quadrant
+
+[2025-09-16 11:41:24] CHANGE: 1 change region(s) detected - Region 1 (top-left): The blue rectangle has moved horizontally and increased in size from the left side
 ```
 
 **Recorded Video Features**:
-- Timestamped change events
-- Visual highlighting of detected changes
-- Subtitle overlay with change descriptions
-- High-quality video output (configurable codec)
+- Timestamped change events with AI-generated descriptions
+- Visual highlighting of detected change regions
+- Burned-in subtitles with real LFM2-VL analysis
+- Regional comparison images saved for inspection
+- High-quality video output with XVID codec
 
 ## 🔍 Technical Details
 
@@ -143,11 +146,12 @@ The application will automatically download and initialize the LFM2-VL-1.6B mode
 5. **VLM Processing**: Side-by-side region comparison
 6. **Intelligent Analysis**: Detailed change descriptions
 
-### VLM Integration (Limited)
-- **Model**: LFM2-VL (Liquid AI's vision-language model)
-- **Current Status**: Text-only responses due to llama.cpp multimodal projector limitations
-- **Inference**: Local llama.cpp server with CUDA acceleration
-- **Architecture**: Ready for future multimodal enhancements
+### LFM2-VL Integration ✅
+- **Model**: LFM2-VL-1.6B (Liquid AI's vision-language model)
+- **Implementation**: Native Hugging Face transformers with proper ChatML formatting
+- **Inference**: Direct PyTorch inference with CUDA acceleration
+- **Capabilities**: Real-time vision analysis with detailed change descriptions
+- **Performance**: 2-8 seconds per regional analysis on modern hardware
 
 ## 🛠️ Advanced Configuration
 
