@@ -5,20 +5,18 @@
 [![LFM2-VL](https://img.shields.io/badge/Model-LFM2--VL--450M-orange.svg)](https://huggingface.co/LiquidAI)
 [![Status](https://img.shields.io/badge/Status-Hackathon%20Ready-brightgreen.svg)]()
 
-A real-time video analysis application that combines advanced OpenCV change detection with automated video recording. Originally designed to integrate Liquid AI's LFM2-VL vision-language model for intelligent scene analysis.
-
-> ⚠️ **Important**: Due to current llama.cpp limitations with LFM2-VL multimodal projector loading, the VLM component provides text-only responses. See [LFM2-VL_MULTIMODAL_LIMITATION.md](LFM2-VL_MULTIMODAL_LIMITATION.md) for technical details.
+A real-time video analysis application that combines advanced OpenCV change detection with Liquid AI's LFM2-VL vision-language model for intelligent scene analysis and automated video recording.
 
 ## 🚀 Features
 
 - **Real-Time Change Detection**: Advanced OpenCV algorithms detect motion and changes
-- **Automated Video Recording**: Records change events with timestamped subtitles
-- **Full-Frame Analysis**: Processes complete video frames for comprehensive monitoring
+- **LFM2-VL Vision Analysis**: Real-time intelligent scene analysis with Liquid AI's vision-language model
+- **Automated Video Recording**: Records change events with AI-generated descriptive subtitles
+- **Regional Analysis**: Focuses on specific change regions with side-by-side comparisons
 - **Temporal Intelligence**: Compares frames 50 frames apart for meaningful change detection
 - **Modern GUI Interface**: CustomTkinter-based interface with live preview
-- **Comprehensive Logging**: Detailed change detection logs with timestamps
-- **Easy Setup**: One-command model download and server management
-- **GPU Acceleration**: CUDA support for faster processing (when VLM is functional)
+- **Comprehensive Logging**: Detailed change detection and AI analysis logs
+- **GPU Acceleration**: CUDA support for fast LFM2-VL inference
 
 ## 🎯 What Makes This Special
 
@@ -62,15 +60,7 @@ python src/main.py
 - **Start/Stop Detection**: Toggle change detection and recording
 - **Visual Feedback**: Live preview shows detected changes with highlighting
 
-### Optional VLM Setup (Advanced)
-For enhanced scene descriptions (currently limited by llama.cpp):
-```bash
-# Download the 450M model for basic text responses
-python setup_local_model.py Q8_0 450M
-
-# Start the server (optional - app works without VLM)
-python restart_server.py
-```
+The application will automatically download and initialize the LFM2-VL-1.6B model on first run for real-time vision analysis.
 
 ## 🔧 Configuration
 

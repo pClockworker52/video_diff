@@ -1,8 +1,0 @@
-{
-  "local_model": {
-    "enabled": true,
-    "model_path": "models/LFM2-VL-1.6B-Q8_0.gguf",
-    "server_port": 8000,
-    "server_host": "localhost"
-  }
-}
