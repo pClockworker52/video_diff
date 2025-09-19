@@ -5,7 +5,7 @@ from scipy import ndimage
 
 
 class DifferenceEngine:
-    def __init__(self, sensitivity=0.3, min_area_ratio=0.005):
+    def __init__(self, sensitivity=0.2, min_area_ratio=0.001):
         """
         Initialize difference engine with clean parameter structure
 
