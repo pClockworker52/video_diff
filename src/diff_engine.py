@@ -5,9 +5,21 @@ from scipy import ndimage
 
 
 class DifferenceEngine:
-    def __init__(self, sensitivity=0.3):
+    def __init__(self, sensitivity=0.3, min_area_ratio=0.005):
+        """
+        Initialize difference engine with clean parameter structure
+
+        Args:
+            sensitivity (float): Detection sensitivity (0.0-1.0, higher = less sensitive)
+            min_area_ratio (float): Minimum region size as ratio of frame area (0.001-0.1)
+        """
         self.sensitivity = sensitivity
+        self.min_area_ratio = min_area_ratio
         self.background_subtractor = cv2.createBackgroundSubtractorMOG2()
+
+        # Derive all thresholds from sensitivity for consistency
+        self.diff_threshold = int(255 * sensitivity)  # Single threshold for all binary conversions
+        self.morph_kernel_size = max(3, int(5 * sensitivity))  # Adaptive morphology
 
     def compute_difference(self, frame1, frame2):
         """
@@ -61,10 +73,10 @@ class DifferenceEngine:
         # Compute absolute difference
         diff = cv2.absdiff(gray1, gray2)
 
-        # Threshold to binary
+        # Threshold to binary using consistent threshold
         _, thresh = cv2.threshold(
             diff,
-            int(255 * self.sensitivity),
+            self.diff_threshold,
             255,
             cv2.THRESH_BINARY
         )
@@ -96,14 +108,14 @@ class DifferenceEngine:
         # Threshold the combined diff_map to binary for contour detection
         _, binary_diff = cv2.threshold(
             diff_map,
-            25,  # Slightly lower threshold for better detection
+            self.diff_threshold,  # Use consistent threshold derived from sensitivity
             255,
             cv2.THRESH_BINARY
         )
 
-        # Apply larger morphological operations to merge nearby changes and create larger regions
-        kernel_large = np.ones((15, 15), np.uint8)  # Larger kernel to connect nearby changes
-        kernel_medium = np.ones((7, 7), np.uint8)   # Medium kernel for cleanup
+        # Apply adaptive morphological operations based on sensitivity
+        kernel_large = np.ones((self.morph_kernel_size * 3, self.morph_kernel_size * 3), np.uint8)
+        kernel_medium = np.ones((self.morph_kernel_size, self.morph_kernel_size), np.uint8)
 
         # First, close gaps to connect nearby change regions
         binary_diff = cv2.morphologyEx(binary_diff, cv2.MORPH_CLOSE, kernel_large)
@@ -119,10 +131,10 @@ class DifferenceEngine:
             cv2.CHAIN_APPROX_SIMPLE
         )
 
-        # Calculate minimum area threshold (0.5% of total video area)
+        # Calculate minimum area threshold using parameter
         frame_height, frame_width = diff_map.shape[:2]
         total_frame_area = frame_width * frame_height
-        min_area_threshold = total_frame_area * 0.005  # 0.5% of video area
+        min_area_threshold = total_frame_area * self.min_area_ratio
 
         # For display boxes, keep minimum box size at 10% of dimensions for visibility
         min_box_width = int(frame_width * 0.1)
@@ -183,7 +195,7 @@ class DifferenceEngine:
         result = original_frame.copy()
 
         # Create a mask for significant changes (same threshold as highlights)
-        _, change_mask = cv2.threshold(diff_map, 30, 255, cv2.THRESH_BINARY)
+        _, change_mask = cv2.threshold(diff_map, self.diff_threshold, 255, cv2.THRESH_BINARY)
 
         # Apply color overlay only where there are significant changes
         diff_color = cv2.applyColorMap(diff_map, cv2.COLORMAP_HOT)
@@ -307,3 +319,22 @@ class DifferenceEngine:
             summary += f", largest area: {largest['area']:.0f} pixels"
 
         return summary
+
+    def set_sensitivity(self, sensitivity):
+        """Update sensitivity and recalculate derived parameters"""
+        self.sensitivity = max(0.0, min(1.0, sensitivity))  # Clamp to valid range
+        self.diff_threshold = int(255 * self.sensitivity)
+        self.morph_kernel_size = max(3, int(5 * self.sensitivity))
+
+    def set_min_area_ratio(self, min_area_ratio):
+        """Update minimum area ratio for noise filtering"""
+        self.min_area_ratio = max(0.001, min(0.1, min_area_ratio))  # Clamp to valid range
+
+    def get_parameters(self):
+        """Get current parameter values for debugging/UI"""
+        return {
+            "sensitivity": self.sensitivity,
+            "min_area_ratio": self.min_area_ratio,
+            "diff_threshold": self.diff_threshold,
+            "morph_kernel_size": self.morph_kernel_size
+        }
