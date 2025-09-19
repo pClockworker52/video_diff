@@ -3,7 +3,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![LFM2-VL](https://img.shields.io/badge/Model-LFM2--VL--1.6B-green.svg)](https://huggingface.co/LiquidAI)
-[![Status](https://img.shields.io/badge/Status-Hackathon%20Ready-brightgreen.svg)]()
+[![Hackathon](https://img.shields.io/badge/Liquid%20AI%20Hackathon-3rd%20Place%20🥉-orange.svg)]()
+
+🥉 **3rd Place Winner - Liquid AI Hackathon**
 
 A real-time video analysis application that combines advanced OpenCV change detection with Liquid AI's LFM2-VL vision-language model for intelligent scene analysis and automated video recording.
 
@@ -29,19 +31,14 @@ This application provides intelligent change detection with:
 
 ## 📋 Quick Start
 
-### 1. Clone and Setup
+### 1. Clone and Install
 ```bash
 git clone https://github.com/pClockworker52/video_diff.git
 cd video_diff
 pip install -r requirements.txt
 ```
 
-### 2. Install Dependencies
-```bash
-pip install opencv-python numpy scikit-image customtkinter Pillow python-dotenv requests
-```
-
-### 3. Run the Application
+### 2. Run the Application
 ```bash
 python src/main.py
 ```
@@ -64,27 +61,27 @@ The application will automatically download and initialize the LFM2-VL-1.6B mode
 
 ## 🔧 Configuration
 
-### Model Options
+### Detection Sensitivity
+The refactored DifferenceEngine provides clean parameter control:
 
-#### LFM2-VL 1.6B (Recommended)
-- **Q8_0 (1.25GB)**: Best quality-to-speed ratio ⭐
-- **Q4_0 (1.25GB)**: Fastest inference
-- **F16 (1.6GB)**: Maximum quality
-
-#### LFM2-VL 450M (Legacy)
-- **Q8_0 (379MB)**: Good for lower-end hardware
-- **Q4_0 (219MB)**: Basic functionality
+```python
+# In src/diff_engine.py initialization
+DifferenceEngine(
+    sensitivity=0.2,      # 0.0-1.0, higher = less sensitive
+    min_area_ratio=0.001  # 0.001-0.1, minimum region size ratio
+)
+```
 
 ### Hardware Requirements
 
-**Recommended for 1.6B Model:**
-- **GPU**: RTX 4080/4090 or similar (4GB+ VRAM)
+**Recommended Configuration:**
+- **GPU**: RTX 3060 or better (4GB+ VRAM) for optimal LFM2-VL performance
 - **RAM**: 8GB+ system memory
 - **CPU**: Modern multi-core processor
 
-**Minimum for 450M Model:**
-- **RAM**: 4GB+ system memory
-- **CPU**: Any modern processor
+**Minimum Requirements:**
+- **RAM**: 6GB+ system memory (for LFM2-VL-1.6B model)
+- **CPU**: Any modern processor (CPU inference supported)
 
 ## 🏗️ Architecture
 
@@ -105,11 +102,10 @@ The application will automatically download and initialize the LFM2-VL-1.6B mode
 
 - **`src/main.py`**: Application controller and frame management
 - **`src/gui.py`**: Real-time GUI with video preview
-- **`src/vlm_processor.py`**: LFM2-VL integration and prompting
-- **`src/diff_engine.py`**: OpenCV change detection algorithms
+- **`src/vlm_processor.py`**: Native transformers LFM2-VL integration with ChatML
+- **`src/diff_engine.py`**: Refactored change detection with clean parameter API
 - **`src/camera_handler.py`**: Video capture and frame processing
-- **`restart_server.py`**: Automated model server management
-- **`setup_local_model.py`**: Model download and configuration
+- **`src/video_recorder.py`**: Video recording with AI-generated subtitle overlay
 
 ## 📊 Performance
 
@@ -153,61 +149,24 @@ The application will automatically download and initialize the LFM2-VL-1.6B mode
 - **Capabilities**: Real-time vision analysis with detailed change descriptions
 - **Performance**: 2-8 seconds per regional analysis on modern hardware
 
-## 🛠️ Advanced Configuration
-
-### Modify Detection Sensitivity
-Edit `config/settings.json`:
-```json
-{
-    "detection": {
-        "threshold": 25,
-        "min_area": 500,
-        "frame_skip_interval": 50
-    }
-}
-```
-
-### Custom VLM Prompts
-Edit `config/prompts.json`:
-```json
-{
-    "change_analysis": "Analyze these side-by-side regions for changes..."
-}
-```
-
-### Manual Server Start
-```bash
-python -m llama_cpp.server \
-  --model models/LFM2-VL-1.6B-Q8_0.gguf \
-  --clip_model_path models/mmproj-LFM2-VL-1.6B-Q8_0.gguf \
-  --port 8000 \
-  --host localhost \
-  --n_ctx 4096 \
-  --n_gpu_layers -1
-```
-
 ## 🐛 Troubleshooting
 
-### Server Won't Start
+### Installation Issues
 ```bash
-# Kill existing servers and restart
-pkill -f "llama_cpp.server"
-python restart_server.py
+# Ensure you have the latest pip and required build tools
+pip install --upgrade pip setuptools wheel
+pip install -r requirements.txt
 ```
-
-### Out of Memory
-- Switch to 450M model: `python setup_local_model.py Q8_0 450M`
-- Reduce context size in restart_server.py: `--n_ctx 2048`
 
 ### Poor Detection Quality
 - Increase lighting conditions
-- Adjust detection threshold in settings
+- Adjust sensitivity in DifferenceEngine initialization
 - Ensure stable camera mounting
+- Reduce min_area_ratio for smaller objects
 
-### VLM Analysis Issues
-- **Known Limitation**: llama.cpp multimodal projector not loading (see [LFM2-VL_MULTIMODAL_LIMITATION.md](LFM2-VL_MULTIMODAL_LIMITATION.md))
-- Application works fully without VLM - change detection and recording function normally
-- VLM provides text-only responses when enabled
+### GPU Memory Issues
+- LFM2-VL will automatically fall back to CPU if insufficient GPU memory
+- Monitor GPU usage with `nvidia-smi` during operation
 
 ## 📁 Project Structure
 
@@ -216,18 +175,13 @@ video_diff/
 ├── src/                           # Core application code
 │   ├── main.py                   # Application controller
 │   ├── gui.py                    # CustomTkinter GUI interface
-│   ├── vlm_processor.py          # VLM integration (limited)
-│   ├── diff_engine.py            # Multi-method change detection
+│   ├── vlm_processor.py          # Native transformers LFM2-VL integration
+│   ├── diff_engine.py            # Refactored change detection with clean API
 │   ├── camera_handler.py         # Video capture and buffering
-│   └── video_recorder.py         # Video recording with subtitles
-├── config/                        # Configuration files (optional)
-├── models/                        # Model files (gitignored)
-├── logs/                          # Analysis and debug logs
-├── recordings/                    # Output video recordings
-├── restart_server.py              # LFM2-VL server management
-├── setup_local_model.py           # Model download utility
-├── test_multimodal.py             # Multimodal testing script
-├── LFM2-VL_MULTIMODAL_LIMITATION.md  # Technical limitation documentation
+│   └── video_recorder.py         # Video recording with AI subtitle overlay
+├── config/                        # Configuration files
+├── CLAUDE.md                      # Claude Code project instructions
+├── LFM2_VL_WORKING_SOLUTION.md    # Technical breakthrough documentation
 └── requirements.txt               # Python dependencies
 ```
 
@@ -243,12 +197,17 @@ video_diff/
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 🏆 Hackathon Achievement
+
+This project placed **3rd in the Liquid AI Hackathon**, demonstrating successful integration of LFM2-VL for real-time video analysis. The breakthrough came from discovering the correct approach to use native Hugging Face transformers instead of llama.cpp for multimodal inference.
+
 ## 🙏 Acknowledgments
 
-- **Liquid AI** for the excellent LFM2-VL vision-language model
-- **llama.cpp** team for efficient model inference
-- **OpenCV** community for computer vision tools
-- **Hackathon participants** for testing and feedback
+- **Liquid AI** for the powerful LFM2-VL vision-language model and hackathon opportunity
+- **Hugging Face** for excellent transformers library enabling native LFM2-VL integration
+- **OpenCV** community for robust computer vision tools
+- **Anthropic** for Claude Code which facilitated rapid development and debugging
+- **Hackathon community** for valuable feedback and collaborative spirit
 
 ## 📧 Support
 
@@ -257,4 +216,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-*Built with ❤️ for intelligent video analysis*
+🥉 **3rd Place Winner - Liquid AI Hackathon**
+*Built with ❤️ for intelligent video analysis using LFM2-VL*
