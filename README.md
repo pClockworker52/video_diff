@@ -110,8 +110,7 @@ DifferenceEngine(
 ## 📊 Performance
 
 ### Processing Speed
-- **Change Detection**: ~30 FPS on modern hardware
-- **Video Recording**: Real-time recording with subtitle overlay
+- **Video Recording**: recording with subtitle overlay
 - **File Processing**: Depends on video resolution and length
 
 ### Application Output Examples
