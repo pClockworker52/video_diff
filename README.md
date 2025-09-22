@@ -184,8 +184,6 @@ video_diff/
 └── requirements.txt               # Python dependencies
 ```
 
-## 🤝 Contributing
-
 
 ## 📄 License
 
