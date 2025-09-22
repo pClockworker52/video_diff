@@ -1,4 +1,4 @@
-# 📹 Video-Diff: Real-Time Change Detection with Vision-Language Models
+# 📹 Video-Diff: Continous Change Detection with Vision-Language Models
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
@@ -7,12 +7,12 @@
 
 🥉 **3rd Place Winner - Liquid AI Hackathon**
 
-A real-time video analysis application that combines advanced OpenCV change detection with Liquid AI's LFM2-VL vision-language model for intelligent scene analysis and automated video recording.
+A Continous video analysis application that combines advanced OpenCV change detection with Liquid AI's LFM2-VL vision-language model for intelligent scene analysis and automated video recording.
 
 ## 🚀 Features
 
-- **Real-Time Change Detection**: Advanced OpenCV algorithms detect motion and changes
-- **LFM2-VL Vision Analysis**: Real-time intelligent scene analysis with Liquid AI's vision-language model
+- **Continous Change Detection**: Advanced OpenCV algorithms detect motion and changes
+- **LFM2-VL Vision Analysis**: Continous intelligent scene analysis with Liquid AI's vision-language model
 - **Automated Video Recording**: Records change events with AI-generated descriptive subtitles
 - **Regional Analysis**: Focuses on specific change regions with side-by-side comparisons
 - **Temporal Intelligence**: Compares frames 50 frames apart for meaningful change detection
@@ -26,7 +26,7 @@ This application provides intelligent change detection with:
 - **Advanced Algorithms**: Multi-method difference detection (SSIM, background subtraction)
 - **Smart Filtering**: Filters out noise and focuses on significant changes
 - **Automatic Recording**: Captures and saves change events with descriptive subtitles
-- **Professional GUI**: Clean, modern interface for real-time monitoring
+- **Professional GUI**: Clean, modern interface for Continous monitoring
 - **Extensible Architecture**: Modular design ready for enhanced VLM integration
 
 ## 📋 Quick Start
@@ -57,7 +57,7 @@ python src/main.py
 - **Start/Stop Detection**: Toggle change detection and recording
 - **Visual Feedback**: Live preview shows detected changes with highlighting
 
-The application will automatically download and initialize the LFM2-VL-1.6B model on first run for real-time vision analysis.
+The application will automatically download and initialize the LFM2-VL-1.6B model on first run for Continous vision analysis.
 
 ## 🔧 Configuration
 
@@ -101,7 +101,7 @@ DifferenceEngine(
 ### Key Components
 
 - **`src/main.py`**: Application controller and frame management
-- **`src/gui.py`**: Real-time GUI with video preview
+- **`src/gui.py`**: Continous GUI with video preview
 - **`src/vlm_processor.py`**: Native transformers LFM2-VL integration with ChatML
 - **`src/diff_engine.py`**: Refactored change detection with clean parameter API
 - **`src/camera_handler.py`**: Video capture and frame processing
@@ -145,7 +145,7 @@ DifferenceEngine(
 - **Model**: LFM2-VL-1.6B (Liquid AI's vision-language model)
 - **Implementation**: Native Hugging Face transformers with proper ChatML formatting
 - **Inference**: Direct PyTorch inference with CUDA acceleration
-- **Capabilities**: Real-time vision analysis with detailed change descriptions
+- **Capabilities**: Continous vision analysis with detailed change descriptions
 - **Performance**: 2-8 seconds per regional analysis on modern hardware
 
 ## 🐛 Troubleshooting
@@ -193,7 +193,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🏆 Hackathon Achievement
 
-This project placed **3rd in the Liquid AI Hackathon**, demonstrating successful integration of LFM2-VL for real-time video analysis. The breakthrough came from discovering the correct approach to use native Hugging Face transformers instead of llama.cpp for multimodal inference.
+This project placed **3rd in the Liquid AI Hackathon**, demonstrating successful integration of LFM2-VL for Continous video analysis. The breakthrough came from discovering the correct approach to use native Hugging Face transformers instead of llama.cpp for multimodal inference.
 
 ## 🙏 Acknowledgments
 
