@@ -189,9 +189,6 @@ video_diff/
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🏆 Hackathon Achievement
-
-This project placed **3rd in the Liquid AI Hackathon**, demonstrating successful integration of LFM2-VL for Continous video analysis. The breakthrough came from discovering the correct approach to use native Hugging Face transformers instead of llama.cpp for multimodal inference.
 
 ## 🙏 Acknowledgments
 
