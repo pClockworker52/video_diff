@@ -201,7 +201,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📧 Support
 
 - **Issues**: [GitHub Issues](https://github.com/pClockworker52/video_diff/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/pClockworker52/video_diff/discussions)
+
 
 ---
 
